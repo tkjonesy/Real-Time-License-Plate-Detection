@@ -4,3 +4,4 @@ dataset
 runs
 *.pt
 test-media
+YOLO11
