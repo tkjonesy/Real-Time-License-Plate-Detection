@@ -9,8 +9,10 @@ This project uses YOLOv11 to detect license plates in a video and OpenCV to iden
 - [Running The Code](#running-the-code)
 
 ## Getting Started
-Clone the repository:<br>
-`git clone https://github.com/tkjonesy/Real-Time-License-Plate-Detection.git`
+
+1. Clone the repository:<br>`git clone https://github.com/tkjonesy/Real-Time-License-Plate-Detection.git`
+2. Install the required packages: <br> `pip install -r requirements.txt`
+
 
 ## Running the Code
 1. Run `main.py`
