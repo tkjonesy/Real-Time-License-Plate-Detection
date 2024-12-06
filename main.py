@@ -3,6 +3,7 @@ import cv2
 import re
 import easyocr
 from collections import defaultdict
+import time
 
 
 '''
@@ -40,14 +41,21 @@ def readPlateText(plate, reader):
 
 
 if __name__ == "__main__":
-    # Setup OCR reader
+    # Setup OCR reader and YOLO model
     reader = easyocr.Reader(['en'])
-
-    # baseModel = YOLO('yolo11m.pt')
     plateModel = YOLO('plateModel.pt')
 
     # Setup video capture or location of video file
-    cap = cv2.VideoCapture('test-media/videotest.mp4')
+    cap = cv2.VideoCapture('test-media/videotest4.mp4')
+
+    # Calculate frame delay
+    fps = cap.get(cv2.CAP_PROP_FPS)
+    frameTime = 1 / fps if fps > 0 else 1 / 30
+
+    # Set window size
+    w, h = 1280, 720
+    cv2.namedWindow('Frame', cv2.WINDOW_NORMAL)
+    cv2.resizeWindow('Frame', w, h)
 
     # Dictionary to track plates and their highest-confidence text
     plateTracker = defaultdict(lambda: {'text': None, 'confidence': 0, 'counter': 0})
@@ -55,6 +63,7 @@ if __name__ == "__main__":
     # Read frames
     ret = True
     while ret:
+        startTime = time.time()
         ret, frame = cap.read()
 
         if not ret:
@@ -62,7 +71,7 @@ if __name__ == "__main__":
             break
 
         # Check for tag
-        detections = plateModel.track(frame, conf=0.7, persist=True, verbose=False)[0]
+        detections = plateModel.track(frame, conf=0.5, persist=True, verbose=False)[0]
 
         # IDs present
         currIDs = set()
@@ -80,8 +89,8 @@ if __name__ == "__main__":
             # Filter cropped plate
             platCropGrey = cv2.cvtColor(platCrop, cv2.COLOR_BGR2GRAY)
 
-            # Resize the image to 8x
-            scale = 8
+            # Resize the image to 4x
+            scale = 4
             resizedImage = cv2.resize(platCropGrey, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
 
             # Otsu thresholding
@@ -116,7 +125,7 @@ if __name__ == "__main__":
         # Display the highest-confidence text for each tracked plate
         for plateID, plateData in plateTracker.items():
             if plateData['text']:
-                label = f"ID: {plateID} Text: {plateData['text']} ({plateData['confidence']:.2f})"
+                label = f"ID: {plateID} | {plateData['text']} ({plateData['confidence']:.2f})"
                 cv2.putText(
                     frame,
                     label,
@@ -129,7 +138,10 @@ if __name__ == "__main__":
 
         # Display the processed frame
         cv2.imshow('Frame', frame)
-        if cv2.waitKey(50) & 0xFF == ord('q'):  # Allow quitting with 'q'
+
+        elapsed = time.time() - startTime
+        delay = max(int((frameTime - elapsed) * 1000), 1)
+        if cv2.waitKey(delay) & 0xFF == ord('q'):  # Allow quitting with 'q'
             break
 
     # Release the video capture and close windows
