@@ -44,10 +44,10 @@ if __name__ == "__main__":
     reader = easyocr.Reader(['en'])
 
     # baseModel = YOLO('yolo11m.pt')
-    plateModel = YOLO('runs/detect/train2/weights/best.pt')
+    plateModel = YOLO('plateModel.pt')
 
     # Setup video capture or location of video file
-    cap = cv2.VideoCapture('test-media/videotest2.mp4')
+    cap = cv2.VideoCapture('test-media/videotest.mp4')
 
     # Dictionary to track plates and their highest-confidence text
     plateTracker = defaultdict(lambda: {'text': None, 'confidence': 0, 'counter': 0})
@@ -80,8 +80,8 @@ if __name__ == "__main__":
             # Filter cropped plate
             platCropGrey = cv2.cvtColor(platCrop, cv2.COLOR_BGR2GRAY)
 
-            # Resize the image to 4x
-            scale = 4.0
+            # Resize the image to 8x
+            scale = 8
             resizedImage = cv2.resize(platCropGrey, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
 
             # Otsu thresholding
@@ -129,7 +129,7 @@ if __name__ == "__main__":
 
         # Display the processed frame
         cv2.imshow('Frame', frame)
-        if cv2.waitKey(1) & 0xFF == ord('q'):  # Allow quitting with 'q'
+        if cv2.waitKey(50) & 0xFF == ord('q'):  # Allow quitting with 'q'
             break
 
     # Release the video capture and close windows
