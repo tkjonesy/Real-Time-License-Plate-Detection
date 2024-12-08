@@ -14,10 +14,10 @@ def readPlateText(plateImage, ocr):
     result = ocr.ocr(plateImage, cls=False)
 
     if not result[0]:
-        return 'No Detection', 0
+        return None, 0
 
     maxArea = 0
-    largestText = 'No Detection'
+    largestText = None
     largestTextConfidence = 0
 
     # Loop through detections
@@ -38,9 +38,9 @@ def readPlateText(plateImage, ocr):
                 largestText = detect[0].upper()
                 largestTextConfidence = detect[1]
 
-        # Remove non-alphanumeric characters
-        cleanText = re.sub(r'[^a-zA-Z0-9]', '', largestText)
-    return largestText, largestTextConfidence
+    # Remove non-alphanumeric characters
+    cleanText = re.sub(r'[^a-zA-Z0-9]', '', largestText)
+    return cleanText, largestTextConfidence
 
 
 if __name__ == '__main__':
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     plateModel = YOLO('plateModel.pt')
 
     # Setup video capture or location of video file
-    cap = cv2.VideoCapture('test-media/videotest6.mp4')
+    cap = cv2.VideoCapture('test-media/videotest2.mp4')
 
     # Calculate frame delay
     fps = cap.get(cv2.CAP_PROP_FPS)
@@ -93,10 +93,24 @@ if __name__ == '__main__':
             plateText, confidence = readPlateText(platCrop, ocr)
 
             # Update tracked plate information if confidence is higher
-            if plateText and confidence > plateTracker[id]['confidence']:
-                plateTracker[id]['text'] = plateText
-                plateTracker[id]['confidence'] = confidence
-                plateTracker[id]['counter'] = 0
+            # or if the text is longer and confidence is similar
+            confThreshold = 0.05
+
+            if plateText:
+                currConf = plateTracker[id]['confidence']
+                currText = plateTracker[id]['text']
+
+                # Update if confidence is higher
+                if confidence > currConf:
+                    plateTracker[id]['text'] = plateText
+                    plateTracker[id]['confidence'] = confidence
+                    plateTracker[id]['counter'] = 0
+
+                # Update if text is longer and confidence is similar
+                elif abs(confidence - currConf) <= confThreshold and len(plateText) > len(currText):
+                    plateTracker[id]['text'] = plateText
+                    plateTracker[id]['confidence'] = confidence
+                    plateTracker[id]['counter'] = 0
 
             # Draw bounding box
             cv2.rectangle(frame, (int(x1), int(y1)), (int(x2), int(y2)), (0, 255, 0), 2)
