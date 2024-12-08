@@ -49,7 +49,7 @@ if __name__ == '__main__':
     plateModel = YOLO('plateModel.pt')
 
     # Setup video capture or location of video file
-    cap = cv2.VideoCapture('test-media/videotest2.mp4')
+    cap = cv2.VideoCapture('test-media/videotest.mp4')
 
     # Calculate frame delay
     fps = cap.get(cv2.CAP_PROP_FPS)
