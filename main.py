@@ -1,52 +1,55 @@
 from ultralytics import YOLO
 import cv2
 import re
-import easyocr
 from collections import defaultdict
 import time
+from paddleocr import PaddleOCR
 
 
 '''
 Takes an image of a cropped plate and returned the text and confidence score
 returns tuple: (text, confidence)
 '''
-def readPlateText(plate, reader):
-    result = reader.readtext(plate)
+def readPlateText(plateImage, ocr):
+    result = ocr.ocr(plateImage, cls=False)
+
+    if not result[0]:
+        return 'No Detection', 0
 
     maxArea = 0
-    largestText = None
+    largestText = 'No Detection'
     largestTextConfidence = 0
 
-    for bbox, text, confidence in result:
-        # Get box Coords
-        x1, y1 = bbox[0]
-        x2, y2 = bbox[-2]
+    # Loop through detections
+    for idx in range(len(result)):
+        res = result[idx]
+        for bbox, detect in res:
 
-        # Calculate area
-        area = (x2 - x1) * (y2 - y1)
+            # Get box Coords
+            x1, y1 = bbox[0]
+            x2, y2 = bbox[-2]
 
-        # Update area if needed
-        if area > maxArea:
-            maxArea = area
-            largestText = text.upper()
-            largestTextConfidence = confidence
+            # Calculate area
+            area = (x2 - x1) * (y2 - y1)
 
-    if not largestText or largestTextConfidence < .2:
-        return None, 0
+            # Update area if needed
+            if area > maxArea:
+                maxArea = area
+                largestText = detect[0].upper()
+                largestTextConfidence = detect[1]
 
-    # Remove non-alphanumeric characters
-    cleanText = re.sub(r'[^a-zA-Z0-9]', '', largestText)
+        # Remove non-alphanumeric characters
+        cleanText = re.sub(r'[^a-zA-Z0-9]', '', largestText)
+    return largestText, largestTextConfidence
 
-    return cleanText, largestTextConfidence
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     # Setup OCR reader and YOLO model
-    reader = easyocr.Reader(['en'])
+    ocr = PaddleOCR(lang='en')
     plateModel = YOLO('plateModel.pt')
 
     # Setup video capture or location of video file
-    cap = cv2.VideoCapture('test-media/videotest2.mp4')
+    cap = cv2.VideoCapture('test-media/videotest6.mp4')
 
     # Calculate frame delay
     fps = cap.get(cv2.CAP_PROP_FPS)
@@ -71,7 +74,7 @@ if __name__ == "__main__":
             break
 
         # Check for tag
-        detections = plateModel.track(frame, conf=0.6, persist=True, verbose=False)[0]
+        detections = plateModel.track(frame, conf=0.7, persist=True, verbose=False)[0]
 
         # IDs present
         currIDs = set()
@@ -86,20 +89,8 @@ if __name__ == "__main__":
             # Crop image
             platCrop = frame[int(y1):int(y2), int(x1):int(x2)].copy()
 
-            # Filter cropped plate
-            platCropGrey = cv2.cvtColor(platCrop, cv2.COLOR_BGR2GRAY)
-
-            # Resize the image to 4x
-            scale = 4
-            resizedImage = cv2.resize(platCropGrey, None, fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
-
-            # Otsu thresholding
-            _, plateThresh = cv2.threshold(platCropGrey, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
-            kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
-            plateThresh = cv2.morphologyEx(plateThresh, cv2.MORPH_CLOSE, kernel)
-
             # Read plate number with OCR
-            plateText, confidence = readPlateText(plateThresh, reader)
+            plateText, confidence = readPlateText(platCrop, ocr)
 
             # Update tracked plate information if confidence is higher
             if plateText and confidence > plateTracker[id]['confidence']:
@@ -125,14 +116,14 @@ if __name__ == "__main__":
         # Display the highest-confidence text for each tracked plate
         for plateID, plateData in plateTracker.items():
             if plateData['text']:
-                label = f"ID: {plateID} | {plateData['text']} ({plateData['confidence']:.2f})"
+                label = f'ID: {plateID} | {plateData['text']} ({plateData['confidence']:.2f})'
                 cv2.putText(
                     frame,
                     label,
                     (int(x1), int(y1) - 10),
                     cv2.FONT_HERSHEY_SIMPLEX,
                     0.5,
-                    (255, 0, 0),
+                    (0, 255, 0),
                     2
                 )
 
