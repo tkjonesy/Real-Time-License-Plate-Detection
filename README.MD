@@ -4,7 +4,7 @@
 This project uses YOLOv11 to detect license plates in a video and OCR to identify the plate number.
 
 ## Results
-![Test on Real-Time Video](media/test.mp4)
+![Test on Real-Time Video](media/test.gif)
 
 ## Table of Contents
 
