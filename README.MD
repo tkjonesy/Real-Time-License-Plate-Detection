@@ -22,7 +22,7 @@ This project uses YOLOv11 to detect license plates in a video and OCR to identif
 
 ## Dataset
 
-For this task, I used the [License Plate Recognition Dataset](https://roboflow.com/dataset/license-plate-recognition-rxg4e) from Roboflow. This dataset contains over 10,000 images with a train:valid:test split of 70:20:10. 
+For this task, I used the [License Plate Recognition Dataset](https://universe.roboflow.com/roboflow-universe-projects/license-plate-recognition-rxg4e) from Roboflow. This dataset contains over 10,000 images with a train:valid:test split of 70:20:10. 
 
 Before feeding the data to YOLO, I artificially increased the size of the dataset using the following techniques from [Albumentations](https://albumentations.ai/docs/):
 
