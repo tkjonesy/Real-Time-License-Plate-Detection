@@ -4,7 +4,7 @@
 This project detects and reads license plate information in real-time.
 
 ## Results
-The text above the bounding box follows the folowing format: "&lt;ID-FOR-PLATE&gt; | &lt;PLATE-TEXT&gt; &lt;CONFIDENCE-SCORE&gt;"
+The text above the bounding box follows the folowing format: "&lt;ID-FOR-PLATE&gt; | &lt;PLATE-TEXT&gt; &lt;CONFIDENCE-SCORE&gt;".
 
 ![Test on Real-Time Video](media/test.gif)
 
