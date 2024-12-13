@@ -1,7 +1,7 @@
 # Real-Time License Plate Detection
 
 ## Description
-This project uses YOLOv11 to detect license plates in a video and OCR to identify the plate number.
+This project detects and reads license plate information in real-time.
 
 ## Results
 ![Test on Real-Time Video](media/test.mp4)
