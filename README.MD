@@ -51,8 +51,7 @@ A significant challenge for this project was accurately reading the plate text f
 - **Inverse to-zero thresholding:** Keeps pixel values below the threshold, setting others to 0.
 - **Otsu thresholding:** Automatically determines the optimal threshold value.
 
-
-### EasyOCR Results
+<h3 style="text-align:center;">EasyOCR Results</h3>
 ![OCR/Thresholding Results](media/thresholding.png)
 
 I struggled to get consistent and accurate results using [EasyOCR](https://github.com/JaidedAI/EasyOCR), even with what I think are strong binarized images. In the end, I pivoted to [Paddle OCR](https://github.com/PaddlePaddle/PaddleOCR), and was able to get amazing results without even using thresholding. This came at a higher computational cost, but applying basic thresholding may help with this cost.
