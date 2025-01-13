@@ -52,7 +52,7 @@ A significant challenge for this project was accurately reading the plate text f
 - **Otsu thresholding:** Automatically determines the optimal threshold value.
 
 <p align="center">
-### EasyOCR Results
+<h3>EasyOCR Results</h3>
 </p>
 
 ![OCR/Thresholding Results](media/thresholding.png)
