@@ -5,7 +5,6 @@ from collections import defaultdict
 import time
 from paddleocr import PaddleOCR
 
-
 '''
 Takes an image of a cropped plate and returned the text and confidence score
 returns tuple: (text, confidence)
