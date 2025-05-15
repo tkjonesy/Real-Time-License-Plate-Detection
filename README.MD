@@ -55,7 +55,7 @@ A significant challenge for this project was accurately reading the plate text f
 
 ![OCR/Thresholding Results](media/thresholding.png)
 
-I struggled to get consistent and accurate results using [EasyOCR](https://github.com/JaidedAI/EasyOCR), even with what I think are strong binarized images. In the end, I pivoted to [Paddle OCR](https://github.com/PaddlePaddle/PaddleOCR), and was able to get amazing results without even using thresholding. This came at a higher computational cost, but applying basic thresholding may help with this cost.
+I struggled to get consistent and accurate results using [EasyOCR](https://github.com/JaidedAI/EasyOCR), even with what I think are strong binary thresholds. In the end, I pivoted to [Paddle OCR](https://github.com/PaddlePaddle/PaddleOCR), and was able to get amazing results out of the box, and even better using thresholding. This came at a higher computational cost, but applying thresholding helped with this cost.
 
 ## Reflection
 
