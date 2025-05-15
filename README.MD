@@ -4,6 +4,8 @@
 This project detects and reads license plate information in real-time.
 
 ## Results
+The text above the bounding box follows the folowing format: "&lt;ID-FOR-PLATE&gt; | &lt;PLATE-TEXT&gt; &lt;CONFIDENCE-SCORE&gt;".
+
 ![Test on Real-Time Video](media/test.gif)
 
 ## Table of Contents
@@ -48,6 +50,8 @@ A significant challenge for this project was accurately reading the plate text f
 - **To-zero thresholding:** Keeps pixel values above the threshold, setting others to 0.
 - **Inverse to-zero thresholding:** Keeps pixel values below the threshold, setting others to 0.
 - **Otsu thresholding:** Automatically determines the optimal threshold value.
+
+### EasyOCR Results
 
 ![OCR/Thresholding Results](media/thresholding.png)
 
