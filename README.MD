@@ -51,7 +51,7 @@ A significant challenge for this project was accurately reading the plate text f
 - **Inverse to-zero thresholding:** Keeps pixel values below the threshold, setting others to 0.
 - **Otsu thresholding:** Automatically determines the optimal threshold value.
 
-### EasyOCR vs PaddleOCR Results
+### EasyOCR vs PaddleOCR
 
 ![OCR/Thresholding Results](media/thresholding.png)
 
