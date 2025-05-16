@@ -5,6 +5,23 @@ from collections import defaultdict
 import time
 from paddleocr import PaddleOCR
 
+
+'''
+Takes an image of a cropped plate and returns the image with an otsu threshold applied
+returns tuple: (text, confidence)
+'''
+def imageThreshold(image):
+    # Grayscale
+    grayImage = cv2.cvtColor(image.copy(), cv2.COLOR_BGR2GRAY)
+
+    # Otsu thresholding
+    _, plateThresh = cv2.threshold(grayImage, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (2, 2))
+    plateThresh = cv2.morphologyEx(plateThresh, cv2.MORPH_CLOSE, kernel)
+
+    return plateThresh
+
+
 '''
 Takes an image of a cropped plate and returned the text and confidence score
 returns tuple: (text, confidence)
@@ -38,7 +55,10 @@ def readPlateText(plateImage, ocr):
                 largestTextConfidence = detect[1]
 
     # Remove non-alphanumeric characters
-    cleanText = re.sub(r'[^a-zA-Z0-9]', '', largestText)
+    try:
+        cleanText = re.sub(r'[^a-zA-Z0-9]', '', largestText)
+    except:
+        cleanText = ''
     return cleanText, largestTextConfidence
 
 
@@ -48,7 +68,7 @@ if __name__ == '__main__':
     plateModel = YOLO('plateModel.pt')
 
     # Setup video capture or location of video file
-    cap = cv2.VideoCapture('test-media/videotest.mp4')
+    cap = cv2.VideoCapture('test-media/videotest5.mp4')
 
     # Calculate frame delay
     fps = cap.get(cv2.CAP_PROP_FPS)
@@ -86,10 +106,13 @@ if __name__ == '__main__':
             currIDs.add(id)
 
             # Crop image
-            platCrop = frame[int(y1):int(y2), int(x1):int(x2)].copy()
+            plateCrop = frame[int(y1):int(y2), int(x1):int(x2)].copy()
+
+            # Apply image pre-processing
+            plateCropThresh = imageThreshold(plateCrop)
 
             # Read plate number with OCR
-            plateText, confidence = readPlateText(platCrop, ocr)
+            plateText, confidence = readPlateText(plateCropThresh, ocr)
 
             # Update tracked plate information if confidence is higher
             # or if the text is longer and confidence is similar
